@@ -8,487 +8,193 @@
 <meta name="apple-mobile-web-app-title" content="Story Drop">
 <meta name="theme-color" content="#0f0f13">
 <title>Story Drop</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f13;
-    --surface: #17171f;
-    --surface2: #1e1e2a;
-    --border: #2a2a3a;
-    --accent: #7c6aff;
-    --accent2: #ff6a8a;
-    --text: #eeeef5;
-    --muted: #6b6b85;
-    --success: #4ade80;
-    --error: #ff6a8a;
-    --radius: 16px;
-    --font-display: 'DM Serif Display', serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100dvh;
-    overflow-x: hidden;
-  }
-
-  /* Ambient background */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -30%;
-    left: -20%;
-    width: 70%;
-    height: 70%;
-    background: radial-gradient(ellipse, rgba(124,106,255,0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -20%;
-    right: -20%;
-    width: 60%;
-    height: 60%;
-    background: radial-gradient(ellipse, rgba(255,106,138,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 40px;
-    min-height: 100dvh;
-  }
-
-  /* ── HEADER ── */
-  header {
-    padding: 56px 24px 20px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .header-title h1 {
-    font-family: var(--font-display);
-    font-size: 32px;
-    line-height: 1.1;
-    letter-spacing: -0.5px;
-  }
-  .header-title h1 em {
-    font-style: italic;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .header-title p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-weight: 300;
-  }
-
-  .settings-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
-  .settings-btn:active { transform: scale(0.93); background: var(--surface2); }
-
-  /* ── SCREENS ── */
-  .screen { display: none; padding: 0 24px; animation: fadeUp 0.3s ease; }
-  .screen.active { display: block; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── SETUP SCREEN ── */
-  .setup-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 24px;
-    margin-bottom: 16px;
-  }
-  .setup-card h2 {
-    font-family: var(--font-display);
-    font-size: 20px;
-    margin-bottom: 6px;
-  }
-  .setup-card p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-  .setup-card a { color: var(--accent); text-decoration: none; }
-
-  /* ── FORM ELEMENTS ── */
-  .field {
-    margin-bottom: 16px;
-  }
-  label {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  input, textarea, select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 15px;
-    padding: 14px 16px;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--accent);
-  }
-  input[type="password"] {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    letter-spacing: 0.05em;
-  }
-  textarea {
-    resize: none;
-    min-height: 100px;
-    line-height: 1.6;
-  }
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b85' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
-  }
-  select option { background: #1e1e2a; }
-
-  /* ── STORY TYPE CHIPS ── */
-  .chips {
-    display: flex;
-    gap: 8px;
-  }
-  .chip {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 6px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.18s;
-    user-select: none;
-  }
-  .chip span { display: block; font-size: 18px; margin-bottom: 3px; }
-  .chip.selected {
-    background: rgba(124,106,255,0.15);
-    border-color: var(--accent);
-    color: var(--text);
-  }
-  .chip.selected.bug { background: rgba(255,106,138,0.12); border-color: var(--accent2); }
-  .chip.selected.chore { background: rgba(74,222,128,0.1); border-color: var(--success); }
-
-  /* ── BUTTONS ── */
-  .btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #9b6aff);
-    color: white;
-  }
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    margin-top: 10px;
-  }
-
-  /* ── TOKEN DISPLAY ── */
-  .token-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(74,222,128,0.08);
-    border: 1px solid rgba(74,222,128,0.2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 13px;
-    color: var(--success);
-    margin-bottom: 16px;
-  }
-  .token-status .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--success);
-    flex-shrink: 0;
-    box-shadow: 0 0 6px var(--success);
-  }
-  .token-mono {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--muted);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* ── DIVIDER ── */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 20px 0;
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 100;
-    white-space: nowrap;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: rgba(74,222,128,0.3); color: var(--success); }
-  .toast.error { border-color: rgba(255,106,138,0.3); color: var(--error); }
-
-  /* ── SPINNER ── */
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── SECTION LABEL ── */
-  .section-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 24px 0 12px;
-  }
-
-  /* ── SUCCESS STATE ── */
-  .success-card {
-    background: var(--surface);
-    border: 1px solid rgba(74,222,128,0.2);
-    border-radius: var(--radius);
-    padding: 32px 24px;
-    text-align: center;
-    animation: fadeUp 0.4s ease;
-  }
-  .success-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
-  .success-card h2 {
-    font-family: var(--font-display);
-    font-size: 24px;
-    margin-bottom: 8px;
-  }
-  .success-card p {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
-  .story-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--accent);
-    font-size: 13px;
-    text-decoration: none;
-    margin-bottom: 24px;
-    font-family: var(--font-mono);
-  }
-
-  /* loading overlay */
-  .loading-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(15,15,19,0.7);
-    backdrop-filter: blur(4px);
-    z-index: 50;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .loading-overlay.show { display: flex; }
-  .loading-overlay p { font-size: 14px; color: var(--muted); }
-  .big-spinner {
-    width: 40px; height: 40px;
-    border: 3px solid rgba(124,106,255,0.2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  /* error card */
-  .error-card {
-    background: rgba(255,106,138,0.08);
-    border: 1px solid rgba(255,106,138,0.25);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--error);
-    display: none;
-  }
-  .error-card.show { display: block; }
-  .error-card strong { display: block; margin-bottom: 4px; font-size: 14px; }
-  .error-card code { font-family: var(--font-mono); font-size: 11px; color: var(--muted); word-break: break-all; }
+:root {
+  --bg: #0f0f13; --surface: #17171f; --surface2: #1e1e2a; --border: #2a2a3a;
+  --accent: #7c6aff; --accent2: #ff6a8a; --text: #eeeef5; --muted: #6b6b85;
+  --success: #4ade80; --error: #ff6a8a; --radius: 16px;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100dvh; overflow-x: hidden; }
+body::before { content: ''; position: fixed; top: -30%; left: -20%; width: 70%; height: 70%; background: radial-gradient(ellipse, rgba(124,106,255,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+body::after { content: ''; position: fixed; bottom: -20%; right: -20%; width: 60%; height: 60%; background: radial-gradient(ellipse, rgba(255,106,138,0.08) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 60px; min-height: 100dvh; }
+header { padding: 56px 24px 20px; display: flex; align-items: flex-start; justify-content: space-between; }
+.header-title h1 { font-family: var(--font-display); font-size: 32px; line-height: 1.1; }
+.header-title h1 em { font-style: italic; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.header-title p { font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 300; }
+.header-right { display: flex; gap: 8px; margin-top: 4px; }
+.icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.icon-btn:active { transform: scale(0.93); background: var(--surface2); }
+.screen { display: none; padding: 0 24px; animation: fadeUp 0.3s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+.card h2 { font-family: var(--font-display); font-size: 20px; margin-bottom: 6px; }
+.card p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 0; }
+.card a { color: var(--accent); text-decoration: none; }
+.field { margin-bottom: 16px; }
+label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+input, textarea, select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-family: var(--font-body); font-size: 15px; padding: 14px 16px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+input[type="password"] { font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.05em; }
+textarea { resize: none; min-height: 100px; line-height: 1.6; }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b85' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+select option { background: #1e1e2a; }
+.chips { display: flex; gap: 8px; }
+.chip { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.18s; user-select: none; }
+.chip span { display: block; font-size: 18px; margin-bottom: 3px; }
+.chip.selected { background: rgba(124,106,255,0.15); border-color: var(--accent); color: var(--text); }
+.chip.selected.bug { background: rgba(255,106,138,0.12); border-color: var(--accent2); }
+.chip.selected.chore { background: rgba(74,222,128,0.1); border-color: var(--success); }
+.btn { width: 100%; padding: 16px; border-radius: 14px; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, var(--accent), #9b6aff); color: white; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-top: 10px; }
+.token-status { display: flex; align-items: center; gap: 10px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--success); margin-bottom: 16px; }
+.token-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; box-shadow: 0 0 6px var(--success); }
+.token-mono { font-family: var(--font-mono); font-size: 12px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.error-card { background: rgba(255,106,138,0.08); border: 1px solid rgba(255,106,138,0.25); border-radius: 12px; padding: 16px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: var(--error); display: none; }
+.error-card.show { display: block; }
+.error-card strong { display: block; margin-bottom: 4px; font-size: 14px; }
+.error-card code { font-family: var(--font-mono); font-size: 11px; color: var(--muted); word-break: break-all; }
+.error-actions { display: flex; gap: 8px; margin-top: 12px; }
+.error-actions .btn { margin-top: 0; font-size: 13px; padding: 10px; }
+.ws-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.ws-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.18s; }
+.ws-item.active-ws { border-color: var(--accent); background: rgba(124,106,255,0.08); }
+.ws-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.ws-item.active-ws .ws-dot { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.ws-info { flex: 1; min-width: 0; }
+.ws-info-name { font-size: 14px; font-weight: 500; }
+.ws-info-token { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.ws-delete { color: var(--muted); padding: 4px; cursor: pointer; line-height: 0; }
+.ws-delete:hover { color: var(--error); }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 8px 0 12px; }
+.success-card { background: var(--surface); border: 1px solid rgba(74,222,128,0.2); border-radius: var(--radius); padding: 32px 24px; text-align: center; }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-card h2 { font-family: var(--font-display); font-size: 24px; margin-bottom: 8px; }
+.success-card p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+.story-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 13px; text-decoration: none; margin-bottom: 24px; font-family: var(--font-mono); }
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; z-index: 100; white-space: nowrap; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(74,222,128,0.3); color: var(--success); }
+.toast.error { border-color: rgba(255,106,138,0.3); color: var(--error); }
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(15,15,19,0.7); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+.loading-overlay.show { display: flex; }
+.loading-overlay p { font-size: 14px; color: var(--muted); }
+.big-spinner { width: 40px; height: 40px; border: 3px solid rgba(124,106,255,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-
 <div class="app">
   <header>
     <div class="header-title">
       <h1>Story <em>Drop</em></h1>
-      <p>Shortcut story creator</p>
+      <p id="header-ws-name">Shortcut story creator</p>
     </div>
-    <button class="settings-btn" onclick="showSettings()" title="Settings">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-      </svg>
-    </button>
+    <div class="header-right">
+      <div class="icon-btn" onclick="goToWorkspaces()" title="Workspaces">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+    </div>
   </header>
 
-  <!-- SETUP SCREEN -->
+  <!-- SETUP -->
   <div class="screen active" id="screen-setup">
-    <div class="setup-card">
+    <div class="card">
       <h2>Welcome 👋</h2>
-      <p>Enter your Shortcut API token to get started. It's saved only on this device and never leaves your phone.</p>
-      <p style="margin-top:8px;">Get your token at <a href="https://app.shortcut.com/settings/account/api-tokens" target="_blank">app.shortcut.com → Settings → API Tokens</a></p>
+      <p>Connect your Shortcut workspace to get started. Get your token at <a href="https://app.shortcut.com/settings/account/api-tokens" target="_blank">Shortcut → Settings → API Tokens</a></p>
     </div>
-
+    <div class="field" style="margin-top:16px;">
+      <label>Workspace Name</label>
+      <input type="text" id="setup-ws-name" placeholder="e.g. EMSInc, ILM House…">
+    </div>
     <div class="field">
-      <label>Shortcut API Token</label>
-      <input type="password" id="api-token-input" placeholder="••••••••••••••••••••••••" autocomplete="off" autocorrect="off" spellcheck="false">
+      <label>API Token</label>
+      <input type="password" id="api-token-input" placeholder="••••••••••••••••••••••••" autocomplete="off" spellcheck="false">
     </div>
-
-    <button class="btn btn-primary" onclick="saveToken()">
+    <button class="btn btn-primary" onclick="saveFirstWorkspace()">
       Connect to Shortcut
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </button>
   </div>
 
-  <!-- MAIN / CREATE STORY SCREEN -->
-  <div class="screen" id="screen-main">
+  <!-- WORKSPACES -->
+  <div class="screen" id="screen-workspaces">
+    <div class="section-label">Your Workspaces</div>
+    <div class="ws-list" id="ws-list"></div>
+    <button class="btn btn-primary" onclick="showScreen('add-workspace')">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Add Workspace
+    </button>
+    <button class="btn btn-ghost" onclick="goBack()">← Back</button>
+  </div>
 
-    <div id="token-status-bar" class="token-status">
+  <!-- ADD WORKSPACE -->
+  <div class="screen" id="screen-add-workspace">
+    <div class="card">
+      <h2>Add Workspace</h2>
+      <p>Connect another Shortcut workspace to switch between them.</p>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>Workspace Name</label>
+      <input type="text" id="new-ws-name" placeholder="e.g. ILM House, cofficient…">
+    </div>
+    <div class="field">
+      <label>API Token</label>
+      <input type="password" id="new-ws-token" placeholder="••••••••••••••••••••••••" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="btn btn-primary" onclick="addWorkspace()">Save Workspace</button>
+    <button class="btn btn-ghost" onclick="goBack()">← Cancel</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="screen" id="screen-main">
+    <div class="token-status">
       <div class="dot"></div>
       <span class="token-mono" id="token-display"></span>
     </div>
 
     <div class="error-card" id="load-error">
       <strong>⚠️ Could not load workspace</strong>
-      <span id="load-error-msg"></span>
-      <br><br>
+      <span id="load-error-msg"></span><br><br>
       <code id="load-error-detail"></code>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="btn btn-ghost" style="margin-top:0;font-size:13px;" onclick="showSettings()">🔑 Update Token</button>
-        <button class="btn btn-ghost" style="margin-top:0;font-size:13px;" onclick="loadWorkspaceData()">↺ Retry</button>
+      <div class="error-actions">
+        <button class="btn btn-ghost" onclick="goToWorkspaces()">Switch Workspace</button>
+        <button class="btn btn-ghost" onclick="loadWorkspaceData()">↺ Retry</button>
       </div>
     </div>
 
     <div class="field">
       <label>Workflow / Space</label>
-      <select id="project-select">
+      <select id="workflow-select" onchange="onWorkflowChange()">
         <option value="">Loading…</option>
       </select>
     </div>
 
+    <div class="field" id="state-field" style="display:none">
+      <label>State</label>
+      <select id="state-select"><option value="">Select state…</option></select>
+    </div>
+
     <div class="field">
       <label>Story Name</label>
-      <input type="text" id="story-name" placeholder="What needs to be done?" autocorrect="on">
+      <input type="text" id="story-name" placeholder="What needs to be done?">
     </div>
 
     <div class="field">
       <label>Story Type</label>
       <div class="chips">
-        <div class="chip feature selected" onclick="selectType('feature', this)">
-          <span>✨</span>Feature
-        </div>
-        <div class="chip bug" onclick="selectType('bug', this)">
-          <span>🐛</span>Bug
-        </div>
-        <div class="chip chore" onclick="selectType('chore', this)">
-          <span>🔧</span>Chore
-        </div>
+        <div class="chip feature selected" onclick="selectType('feature',this)"><span>✨</span>Feature</div>
+        <div class="chip bug" onclick="selectType('bug',this)"><span>🐛</span>Bug</div>
+        <div class="chip chore" onclick="selectType('chore',this)"><span>🔧</span>Chore</div>
       </div>
     </div>
 
@@ -499,39 +205,33 @@
 
     <div class="field">
       <label>Product Area</label>
-      <input type="text" id="product-area" placeholder="e.g. Onboarding, Payments, Dashboard">
+      <select id="product-area-select"><option value="">Select product area…</option></select>
     </div>
 
     <div class="field">
       <label>Technical Area</label>
-      <input type="text" id="technical-area" placeholder="e.g. Frontend, Backend, Infra, API">
+      <select id="technical-area-select"><option value="">Select technical area…</option></select>
     </div>
 
     <div class="field">
       <label>Requester</label>
-      <select id="requester-select">
-        <option value="">Select member…</option>
-      </select>
+      <select id="requester-select"><option value="">Select member…</option></select>
     </div>
 
     <div class="field">
       <label>Owner</label>
-      <select id="owner-select">
-        <option value="">Select member…</option>
-      </select>
+      <select id="owner-select"><option value="">Select member…</option></select>
     </div>
 
-    <div style="margin-top: 8px;">
+    <div style="margin-top:8px;">
       <button class="btn btn-primary" id="submit-btn" onclick="createStory()">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-          <path d="M12 5v14M5 12l7 7 7-7"/>
-        </svg>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         Drop Story into Shortcut
       </button>
     </div>
   </div>
 
-  <!-- SUCCESS SCREEN -->
+  <!-- SUCCESS -->
   <div class="screen" id="screen-success">
     <div class="success-card">
       <div class="success-icon">🎉</div>
@@ -539,169 +239,211 @@
       <p id="success-msg">Your story has been added to Shortcut.</p>
       <br>
       <a class="story-link" id="story-link" href="#" target="_blank">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-        </svg>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
         View in Shortcut
       </a>
       <button class="btn btn-primary" onclick="newStory()">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         Create Another Story
       </button>
-      <button class="btn btn-ghost" onclick="showSettings()">Change Settings</button>
+      <button class="btn btn-ghost" onclick="goToWorkspaces()">Switch Workspace</button>
     </div>
   </div>
-
-  <!-- SETTINGS SCREEN -->
-  <div class="screen" id="screen-settings">
-    <div class="setup-card">
-      <h2>Settings</h2>
-      <p>Update your Shortcut API token. Your current token is saved on this device.</p>
-    </div>
-
-    <div class="field">
-      <label>API Token</label>
-      <input type="password" id="settings-token-input" placeholder="••••••••••••••••••••••••" autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>
-
-    <button class="btn btn-primary" onclick="updateToken()">Save Token</button>
-    <button class="btn btn-ghost" onclick="goBack()">← Back</button>
-  </div>
-
 </div>
 
-<!-- Loading overlay -->
 <div class="loading-overlay" id="loading">
   <div class="big-spinner"></div>
   <p id="loading-msg">Connecting…</p>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 const API_BASE = 'https://shortcut-proxy.jannae.workers.dev';
+
+let workspaces = [];
+let activeWsId = null;
 let token = '';
 let members = [];
-  let workflows = [];
+let workflows = [];
+let customFields = {};
 let selectedType = 'feature';
 let lastScreen = 'main';
 
 // ── INIT ──
 window.addEventListener('load', () => {
-  token = localStorage.getItem('sc_token') || '';
-  if (token) {
-    showScreen('main');
-    loadWorkspaceData();
-  } else {
-    showScreen('setup');
-  }
+  try {
+    const stored = localStorage.getItem('sd_workspaces');
+    workspaces = stored ? JSON.parse(stored) : [];
+    activeWsId = localStorage.getItem('sd_active_ws') || '';
+    // Legacy migration
+    if (!workspaces.length) {
+      const legacy = localStorage.getItem('sc_token');
+      if (legacy) {
+        const ws = { id: 'ws_' + Date.now(), name: 'My Workspace', token: legacy };
+        workspaces = [ws]; activeWsId = ws.id; saveWorkspaces();
+      }
+    }
+  } catch(e) { workspaces = []; }
+
+  if (!workspaces.length) { showScreen('setup'); return; }
+  if (!activeWsId || !workspaces.find(w => w.id === activeWsId)) activeWsId = workspaces[0].id;
+  activateWorkspace(activeWsId);
 });
+
+function saveWorkspaces() {
+  localStorage.setItem('sd_workspaces', JSON.stringify(workspaces));
+  localStorage.setItem('sd_active_ws', activeWsId || '');
+}
 
 // ── SCREENS ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
 }
-
-function showSettings() {
-  lastScreen = document.querySelector('.screen.active').id.replace('screen-','');
-  const input = document.getElementById('settings-token-input');
-  input.value = token ? '••••••••••' : '';
-  showScreen('settings');
+function goBack() { showScreen(lastScreen || 'main'); }
+function goToWorkspaces() {
+  lastScreen = document.querySelector('.screen.active').id.replace('screen-', '');
+  renderWorkspacesList();
+  showScreen('workspaces');
 }
 
-function goBack() {
-  showScreen(lastScreen || 'main');
+// ── WORKSPACES ──
+function saveFirstWorkspace() {
+  const name = document.getElementById('setup-ws-name').value.trim() || 'My Workspace';
+  const t = document.getElementById('api-token-input').value.trim();
+  if (!t) { showToast('Please enter your API token', 'error'); return; }
+  const ws = { id: 'ws_' + Date.now(), name, token: t };
+  workspaces = [ws]; activeWsId = ws.id; saveWorkspaces();
+  activateWorkspace(ws.id);
 }
 
-// ── TOKEN ──
-function saveToken() {
-  const val = document.getElementById('api-token-input').value.trim();
-  if (!val) { showToast('Please enter your API token', 'error'); return; }
-  token = val;
-  localStorage.setItem('sc_token', token);
+function addWorkspace() {
+  const name = document.getElementById('new-ws-name').value.trim() || 'Workspace ' + (workspaces.length + 1);
+  const t = document.getElementById('new-ws-token').value.trim();
+  if (!t) { showToast('Please enter an API token', 'error'); return; }
+  const ws = { id: 'ws_' + Date.now(), name, token: t };
+  workspaces.push(ws); saveWorkspaces();
+  activateWorkspace(ws.id);
+}
+
+function deleteWorkspace(id, e) {
+  e.stopPropagation();
+  workspaces = workspaces.filter(w => w.id !== id);
+  if (activeWsId === id) activeWsId = workspaces[0]?.id || null;
+  saveWorkspaces();
+  if (!workspaces.length) { showScreen('setup'); return; }
+  renderWorkspacesList();
+}
+
+function activateWorkspace(id) {
+  const ws = workspaces.find(w => w.id === id);
+  if (!ws) { showScreen('setup'); return; }
+  activeWsId = id; token = ws.token; saveWorkspaces();
+  document.getElementById('header-ws-name').textContent = ws.name;
   showScreen('main');
   loadWorkspaceData();
 }
 
-function updateToken() {
-  const val = document.getElementById('settings-token-input').value.trim();
-  if (val && !val.startsWith('•')) {
-    token = val;
-    localStorage.setItem('sc_token', token);
-  }
-  showToast('Token saved ✓', 'success');
-  showScreen('main');
-  loadWorkspaceData();
+function renderWorkspacesList() {
+  const list = document.getElementById('ws-list');
+  list.innerHTML = '';
+  workspaces.forEach(ws => {
+    const el = document.createElement('div');
+    el.className = 'ws-item' + (ws.id === activeWsId ? ' active-ws' : '');
+    el.onclick = () => activateWorkspace(ws.id);
+    el.innerHTML = `
+      <div class="ws-dot"></div>
+      <div class="ws-info">
+        <div class="ws-info-name">${ws.name}</div>
+        <div class="ws-info-token">${ws.token.slice(0,8)}••••${ws.token.slice(-4)}</div>
+      </div>
+      <div class="ws-delete" onclick="deleteWorkspace('${ws.id}',event)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>`;
+    list.appendChild(el);
+  });
 }
 
 // ── LOAD DATA ──
 async function loadWorkspaceData() {
-  const display = document.getElementById('token-display');
-  display.textContent = token.slice(0,8) + '••••••••' + token.slice(-4);
-
-  // Hide any previous error
+  const ws = workspaces.find(w => w.id === activeWsId);
+  document.getElementById('token-display').textContent = (ws?.name || '') + ' — ' + token.slice(0,8) + '••••' + token.slice(-4);
   document.getElementById('load-error').classList.remove('show');
-  document.getElementById('project-select').innerHTML = '<option value="">Loading…</option>';
+  document.getElementById('workflow-select').innerHTML = '<option value="">Loading…</option>';
+  document.getElementById('state-field').style.display = 'none';
 
   try {
-    const [workflowsRes, membersRes] = await Promise.all([
+    const [workflowsRes, membersRes, customFieldsRes] = await Promise.all([
       scFetch('/workflows'),
-      scFetch('/members')
+      scFetch('/members'),
+      scFetch('/custom-fields')
     ]);
 
-    // Projects
-    const projectSel = document.getElementById('project-select');
-    projectSel.innerHTML = '<option value="">Select a workflow…</option>';
+    // Workflows
     workflows = workflowsRes.sort((a,b) => a.name.localeCompare(b.name));
+    const wfSel = document.getElementById('workflow-select');
+    wfSel.innerHTML = '<option value="">Select workflow…</option>';
     workflows.forEach(w => {
-        const opt = document.createElement('option');
-        opt.value = w.id;
-        opt.textContent = w.name;
-        projectSel.appendChild(opt);
-      });
+      const o = document.createElement('option');
+      o.value = w.id; o.textContent = w.name;
+      wfSel.appendChild(o);
+    });
 
     // Members
-    members = membersRes.filter(m => !m.disabled);
+    members = membersRes.filter(m => !m.disabled).sort((a,b) => (a.profile.name||'').localeCompare(b.profile.name||''));
     ['requester-select','owner-select'].forEach(id => {
       const sel = document.getElementById(id);
       sel.innerHTML = '<option value="">Select member…</option>';
-      members
-        .sort((a,b) => (a.profile.name||'').localeCompare(b.profile.name||''))
-        .forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.profile.name || m.profile.mention_name;
-          sel.appendChild(opt);
-        });
+      members.forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.id; o.textContent = m.profile.name || m.profile.mention_name;
+        sel.appendChild(o);
+      });
+    });
+
+    // Custom Fields
+    customFields = {};
+    customFieldsRes.forEach(f => {
+      const n = f.name.toLowerCase();
+      if (n.includes('product')) customFields.productArea = { id: f.id, values: f.values || [] };
+      else if (n.includes('tech')) customFields.technicalArea = { id: f.id, values: f.values || [] };
+    });
+
+    const paSel = document.getElementById('product-area-select');
+    paSel.innerHTML = '<option value="">Select product area…</option>';
+    (customFields.productArea?.values || []).sort((a,b) => a.value.localeCompare(b.value)).forEach(v => {
+      const o = document.createElement('option'); o.value = v.id; o.textContent = v.value; paSel.appendChild(o);
+    });
+
+    const taSel = document.getElementById('technical-area-select');
+    taSel.innerHTML = '<option value="">Select technical area…</option>';
+    (customFields.technicalArea?.values || []).sort((a,b) => a.value.localeCompare(b.value)).forEach(v => {
+      const o = document.createElement('option'); o.value = v.id; o.textContent = v.value; taSel.appendChild(o);
     });
 
   } catch(e) {
-    const errCard = document.getElementById('load-error');
-    const errMsg = document.getElementById('load-error-msg');
-    const errDetail = document.getElementById('load-error-detail');
-
-    let friendlyMsg = '';
-    let detail = e.message || 'Unknown error';
-
-    if (e.message && e.message.includes('401')) {
-      friendlyMsg = 'Your API token was rejected (401 Unauthorized). It may be invalid, expired, or read-only tokens may not have permission.';
-    } else if (e.message && e.message.includes('403')) {
-      friendlyMsg = 'Access denied (403 Forbidden). Make sure your token has full access, not read-only.';
-    } else if (e.message && e.message.toLowerCase().includes('failed to fetch') || e.message?.includes('cors') || e.message?.includes('network')) {
-      friendlyMsg = 'Network error — could not reach Shortcut API. This may be a CORS issue with the browser. Try opening the app directly (not in an iframe).';
-    } else {
-      friendlyMsg = 'Could not connect to your Shortcut workspace.';
-    }
-
-    errMsg.textContent = ' ' + friendlyMsg;
-    errDetail.textContent = 'Error: ' + detail;
-    errCard.classList.add('show');
-    document.getElementById('project-select').innerHTML = '<option value="">— failed to load —</option>';
+    let msg = 'Could not connect to your Shortcut workspace.';
+    if (e.message?.includes('401')) msg = 'Token rejected (401). Check it\'s a full-access token.';
+    else if (e.message?.includes('403')) msg = 'Access denied (403). Token may be read-only.';
+    else if (e.message?.toLowerCase().includes('failed to fetch')) msg = 'Network error — check your Cloudflare Worker is deployed.';
+    document.getElementById('load-error-msg').textContent = ' ' + msg;
+    document.getElementById('load-error-detail').textContent = 'Error: ' + (e.message || 'Unknown');
+    document.getElementById('load-error').classList.add('show');
+    document.getElementById('workflow-select').innerHTML = '<option value="">— failed to load —</option>';
   }
+}
+
+// ── WORKFLOW → STATES ──
+function onWorkflowChange() {
+  const wf = workflows.find(w => w.id === parseInt(document.getElementById('workflow-select').value));
+  const sf = document.getElementById('state-field');
+  const ss = document.getElementById('state-select');
+  if (!wf?.states?.length) { sf.style.display = 'none'; return; }
+  ss.innerHTML = '';
+  wf.states.forEach(s => {
+    const o = document.createElement('option'); o.value = s.id; o.textContent = s.name; ss.appendChild(o);
+  });
+  sf.style.display = 'block';
 }
 
 // ── STORY TYPE ──
@@ -714,108 +456,79 @@ function selectType(type, el) {
 // ── CREATE STORY ──
 async function createStory() {
   const name = document.getElementById('story-name').value.trim();
-  const projectId = document.getElementById('project-select').value;
+  const wfId = document.getElementById('workflow-select').value;
+  const stateId = document.getElementById('state-select').value;
   const description = document.getElementById('story-description').value.trim();
-  const productArea = document.getElementById('product-area').value.trim();
-  const technicalArea = document.getElementById('technical-area').value.trim();
   const requesterId = document.getElementById('requester-select').value;
   const ownerId = document.getElementById('owner-select').value;
+  const productAreaId = document.getElementById('product-area-select').value;
+  const technicalAreaId = document.getElementById('technical-area-select').value;
 
   if (!name) { showToast('Story name is required', 'error'); return; }
-  if (!projectId) { showToast('Please select a workflow', 'error'); return; }
+  if (!wfId) { showToast('Please select a workflow', 'error'); return; }
+  if (!stateId) { showToast('Please select a state', 'error'); return; }
 
-  // Build description with extra fields
-  let fullDesc = description;
-  const extras = [];
-  if (productArea) extras.push(`**Product Area:** ${productArea}`);
-  if (technicalArea) extras.push(`**Technical Area:** ${technicalArea}`);
-  if (extras.length) {
-    fullDesc = extras.join('\n') + (description ? '\n\n---\n\n' + description : '');
-  }
-
-  // Find first state of selected workflow
-  const selectedWorkflow = workflows.find(w => w.id === parseInt(projectId));
-  const firstStateId = selectedWorkflow && selectedWorkflow.states && selectedWorkflow.states.length
-    ? selectedWorkflow.states[0].id : undefined;
+  const cfPayload = [];
+  if (productAreaId && customFields.productArea) cfPayload.push({ field_id: customFields.productArea.id, value_id: productAreaId });
+  if (technicalAreaId && customFields.technicalArea) cfPayload.push({ field_id: customFields.technicalArea.id, value_id: technicalAreaId });
 
   const payload = {
-    name,
-    story_type: selectedType,
-    workflow_state_id: firstStateId,
-    description: fullDesc || undefined,
+    name, story_type: selectedType,
+    workflow_state_id: parseInt(stateId),
+    description: description || undefined,
     requested_by_id: requesterId || undefined,
-    owner_ids: ownerId ? [ownerId] : undefined
+    owner_ids: ownerId ? [ownerId] : undefined,
+    custom_fields: cfPayload.length ? cfPayload : undefined
   };
 
   setLoading(true, 'Creating story…');
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-
+  document.getElementById('submit-btn').disabled = true;
   try {
     const story = await scFetch('/stories', 'POST', payload);
     setLoading(false);
-    btn.disabled = false;
-
-    // Show success
-    document.getElementById('success-msg').textContent =
-      `"${story.name}" was added to your Shortcut workspace.`;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('success-msg').textContent = `"${story.name}" was added to your Shortcut workspace.`;
     const link = document.getElementById('story-link');
     link.href = story.app_url || `https://app.shortcut.com/story/${story.id}`;
     link.textContent = `sc-${story.id} — View in Shortcut`;
-
     showScreen('success');
   } catch(e) {
     setLoading(false);
-    btn.disabled = false;
+    document.getElementById('submit-btn').disabled = false;
     showToast('Error: ' + (e.message || 'Could not create story'), 'error');
   }
 }
 
-// ── NEW STORY ──
 function newStory() {
-  document.getElementById('story-name').value = '';
-  document.getElementById('story-description').value = '';
-  document.getElementById('product-area').value = '';
-  document.getElementById('technical-area').value = '';
-  document.getElementById('requester-select').value = '';
-  document.getElementById('owner-select').value = '';
+  ['story-name','story-description'].forEach(id => document.getElementById(id).value = '');
+  ['requester-select','owner-select','product-area-select','technical-area-select','workflow-select'].forEach(id => document.getElementById(id).selectedIndex = 0);
+  document.getElementById('state-field').style.display = 'none';
   selectedType = 'feature';
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
   document.querySelector('.chip.feature').classList.add('selected');
   showScreen('main');
 }
 
-// ── API HELPER ──
 async function scFetch(path, method = 'GET', body) {
   const res = await fetch(API_BASE + path, {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Shortcut-Token': token
-    },
+    headers: { 'Content-Type': 'application/json', 'Shortcut-Token': token },
     body: body ? JSON.stringify(body) : undefined
   });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `HTTP ${res.status}`);
-  }
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `HTTP ${res.status}`); }
   return res.json();
 }
 
-// ── UI HELPERS ──
 function setLoading(show, msg = 'Loading…') {
-  const el = document.getElementById('loading');
   document.getElementById('loading-msg').textContent = msg;
-  el.classList.toggle('show', show);
+  document.getElementById('loading').classList.toggle('show', show);
 }
 
 function showToast(msg, type = '') {
-  const toast = document.getElementById('toast');
-  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
-  toast.innerHTML = `<span>${icon}</span> ${msg}`;
-  toast.className = `toast ${type} show`;
-  setTimeout(() => toast.classList.remove('show'), 3500);
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span> ${msg}`;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
 </script>
 </body>
