@@ -388,6 +388,8 @@ async function loadWorkspaceData() {
       o.value = w.id; o.textContent = w.name;
       wfSel.appendChild(o);
     });
+    // Auto-select if only one workflow
+    if (workflows.length === 1) { wfSel.value = workflows[0].id; onWorkflowChange(); }
 
     // Members
     members = membersRes.filter(m => !m.disabled).sort((a,b) => (a.profile.name||'').localeCompare(b.profile.name||''));
