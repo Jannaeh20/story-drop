@@ -392,6 +392,22 @@
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
+
+  /* error card */
+  .error-card {
+    background: rgba(255,106,138,0.08);
+    border: 1px solid rgba(255,106,138,0.25);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--error);
+    display: none;
+  }
+  .error-card.show { display: block; }
+  .error-card strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .error-card code { font-family: var(--font-mono); font-size: 11px; color: var(--muted); word-break: break-all; }
 </style>
 </head>
 <body>
@@ -436,6 +452,17 @@
     <div id="token-status-bar" class="token-status">
       <div class="dot"></div>
       <span class="token-mono" id="token-display"></span>
+    </div>
+
+    <div class="error-card" id="load-error">
+      <strong>⚠️ Could not load workspace</strong>
+      <span id="load-error-msg"></span>
+      <br><br>
+      <code id="load-error-detail"></code>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn btn-ghost" style="margin-top:0;font-size:13px;" onclick="showSettings()">🔑 Update Token</button>
+        <button class="btn btn-ghost" style="margin-top:0;font-size:13px;" onclick="loadWorkspaceData()">↺ Retry</button>
+      </div>
     </div>
 
     <div class="field">
@@ -615,7 +642,9 @@ async function loadWorkspaceData() {
   const display = document.getElementById('token-display');
   display.textContent = token.slice(0,8) + '••••••••' + token.slice(-4);
 
-  setLoading(true, 'Loading workspace…');
+  // Hide any previous error
+  document.getElementById('load-error').classList.remove('show');
+  document.getElementById('project-select').innerHTML = '<option value="">Loading projects…</option>';
 
   try {
     const [projectsRes, membersRes] = await Promise.all([
@@ -651,10 +680,28 @@ async function loadWorkspaceData() {
         });
     });
 
-    setLoading(false);
   } catch(e) {
-    setLoading(false);
-    showToast('Failed to load workspace: ' + (e.message || 'Check your token'), 'error');
+    const errCard = document.getElementById('load-error');
+    const errMsg = document.getElementById('load-error-msg');
+    const errDetail = document.getElementById('load-error-detail');
+
+    let friendlyMsg = '';
+    let detail = e.message || 'Unknown error';
+
+    if (e.message && e.message.includes('401')) {
+      friendlyMsg = 'Your API token was rejected (401 Unauthorized). It may be invalid, expired, or read-only tokens may not have permission.';
+    } else if (e.message && e.message.includes('403')) {
+      friendlyMsg = 'Access denied (403 Forbidden). Make sure your token has full access, not read-only.';
+    } else if (e.message && e.message.toLowerCase().includes('failed to fetch') || e.message?.includes('cors') || e.message?.includes('network')) {
+      friendlyMsg = 'Network error — could not reach Shortcut API. This may be a CORS issue with the browser. Try opening the app directly (not in an iframe).';
+    } else {
+      friendlyMsg = 'Could not connect to your Shortcut workspace.';
+    }
+
+    errMsg.textContent = ' ' + friendlyMsg;
+    errDetail.textContent = 'Error: ' + detail;
+    errCard.classList.add('show');
+    document.getElementById('project-select').innerHTML = '<option value="">— failed to load —</option>';
   }
 }
 
