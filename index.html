@@ -466,9 +466,9 @@
     </div>
 
     <div class="field">
-      <label>Project</label>
+      <label>Workflow / Space</label>
       <select id="project-select">
-        <option value="">Loading projects…</option>
+        <option value="">Loading…</option>
       </select>
     </div>
 
@@ -582,9 +582,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API_BASE = 'https://shortcut-proxy.jannae.workers.dev';
+const API_BASE = 'https://shortcut-proxy.YOUR-SUBDOMAIN.workers.dev';
 let token = '';
 let members = [];
+  let workflows = [];
 let selectedType = 'feature';
 let lastScreen = 'main';
 
@@ -644,24 +645,22 @@ async function loadWorkspaceData() {
 
   // Hide any previous error
   document.getElementById('load-error').classList.remove('show');
-  document.getElementById('project-select').innerHTML = '<option value="">Loading projects…</option>';
+  document.getElementById('project-select').innerHTML = '<option value="">Loading…</option>';
 
   try {
-    const [projectsRes, membersRes] = await Promise.all([
-      scFetch('/projects'),
+    const [workflowsRes, membersRes] = await Promise.all([
+      scFetch('/workflows'),
       scFetch('/members')
     ]);
 
     // Projects
     const projectSel = document.getElementById('project-select');
-    projectSel.innerHTML = '<option value="">Select a project…</option>';
-    projectsRes
-      .filter(p => !p.archived)
-      .sort((a,b) => a.name.localeCompare(b.name))
-      .forEach(p => {
+    projectSel.innerHTML = '<option value="">Select a workflow…</option>';
+    workflows = workflowsRes.sort((a,b) => a.name.localeCompare(b.name));
+    workflows.forEach(w => {
         const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = p.name;
+        opt.value = w.id;
+        opt.textContent = w.name;
         projectSel.appendChild(opt);
       });
 
@@ -723,7 +722,7 @@ async function createStory() {
   const ownerId = document.getElementById('owner-select').value;
 
   if (!name) { showToast('Story name is required', 'error'); return; }
-  if (!projectId) { showToast('Please select a project', 'error'); return; }
+  if (!projectId) { showToast('Please select a workflow', 'error'); return; }
 
   // Build description with extra fields
   let fullDesc = description;
@@ -734,10 +733,15 @@ async function createStory() {
     fullDesc = extras.join('\n') + (description ? '\n\n---\n\n' + description : '');
   }
 
+  // Find first state of selected workflow
+  const selectedWorkflow = workflows.find(w => w.id === parseInt(projectId));
+  const firstStateId = selectedWorkflow && selectedWorkflow.states && selectedWorkflow.states.length
+    ? selectedWorkflow.states[0].id : undefined;
+
   const payload = {
     name,
     story_type: selectedType,
-    project_id: parseInt(projectId),
+    workflow_state_id: firstStateId,
     description: fullDesc || undefined,
     requested_by_id: requesterId || undefined,
     owner_ids: ownerId ? [ownerId] : undefined
